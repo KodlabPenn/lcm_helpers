@@ -1,6 +1,24 @@
 # Run this script in your log directory, recursively looks for *.readme and 
 # displays them 
 
+# Handling '-h' option for help string
+while getopts ":h" option; do
+   case $option in
+      h) # display Help
+         echo "This script creates a lab notebook view of files ending in '.readmes'"
+         echo "Run this script in your logs directory and it will recursively look"
+         echo "through the tree"
+         echo 
+         echo "Syntax: lab_notebook.sh [-h]"
+         echo "options:"
+         echo "    h    Print this help"
+         exit;;
+     \?) # incorrect option
+         echo "Error: Invalid option, use '-h' "
+         exit;;
+   esac
+done
+
 # Get readmes
 readmes=$(ls -R -r */*.readme)
 
