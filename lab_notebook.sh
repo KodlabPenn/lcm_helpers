@@ -20,7 +20,8 @@ while getopts ":h" option; do
 done
 
 # Get readmes
-readmes=$(ls -R -r */*.readme)
+readmes="$(ls -R -r *.readme) "
+readmes+=$(ls -R -r */*.readme)
 
 # Make a tempfile for concatenating and displaying
 tmpFile=$(tempfile)
