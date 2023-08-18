@@ -82,6 +82,7 @@ import subprocess
 import argparse
 import datetime
 import re
+import time
 
 
 def input_yn(prompt):
@@ -104,6 +105,16 @@ def input_yn(prompt):
       return False
     else:
       print("Invalid response.")
+
+def minute_second_string(time_in_seconds):
+  """ Converts seconds to a string that says "XX minute(s) and YY second(s)" 
+  """
+  minutes = int(time_in_seconds//60)
+  seconds = int(10*time_in_seconds%60)/10
+  plural_min = ("s","")[int(minutes==1)]
+  plural_sec= ("s","")[int(seconds==1)]
+  return f"{minutes} minute" + plural_min + \
+         f" and {seconds} second" + plural_sec
 
 def check_dir_path(string):
   """ Check if `string` is a directory and ask if one should be made if it is 
@@ -221,10 +232,12 @@ try:
     input("********************************\n"+
           "********************************\n"+
           "Click enter to start logging..." )
+  start_time = time.time()
   cmd = ["lcm-logger", os.path.join(full_path,log_path) ]
   process = subprocess.run(cmd, check=True)
 except KeyboardInterrupt:
   # Ask if we should keep the log
+  end_time = time.time()
   if not input_yn("Keep log?"):
     delete_log_cmd = ["rm", os.path.join(full_path,log_path)]
     subprocess.run(delete_log_cmd)
@@ -243,11 +256,17 @@ except KeyboardInterrupt:
       print("\t$", *delete_directory_cmd)
   else:
     # Make readme and open editor
-    if do_readme_post:
-      print("Opening README for post run notes.")
+    if do_readme:
       with open(readme_file_path, "a") as file:
-        file.write("\nPOST RUN NOTES:  **************** \n")
-      subprocess.run(readme_nano_cmd)
+        file.write(f"\n******************************************\n" + \
+                    "LOG DURATION: " + \
+                    minute_second_string(end_time - start_time) + \
+                    "\n******************************************\n")
+        if do_readme_post:
+          print("Opening README for post run notes.")
+          file.write("\nPOST RUN NOTES:  **************** \n")
+      if do_readme_post:
+        subprocess.run(readme_nano_cmd)
     if do_readme:
       print("X--------------------------------------------------X")
       subprocess.run(["cat", readme_file_path])
