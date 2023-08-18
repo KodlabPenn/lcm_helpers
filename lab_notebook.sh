@@ -1,5 +1,6 @@
 # Run this script in your log directory, recursively looks for *.readme and 
 # displays them 
+# TODO: add directory option, add depth limit/tabbing
 
 # Handling '-h' option for help string
 while getopts ":h" option; do
