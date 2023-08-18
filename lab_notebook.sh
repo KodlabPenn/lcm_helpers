@@ -27,11 +27,11 @@ readmes+=$(ls -R -r */*.readme)
 tmpFile=$(tempfile)
 
 # Coloring for easier test to test differentiation in 'less'
-LOGFILEFORMAT="\033[46;1;3;30m"
+LOGFILEFORMAT="\033[3;33m"
 
 # Line drawing helper funtion
 draw_line(){
-    for i in $(seq 1 $1); do echo -e -n "-"; done
+    for i in $(seq 1 $1); do echo -e -n "${LOGFILEFORMAT}-"; done
 }
 
 # Add readmes and headers to tempfile
