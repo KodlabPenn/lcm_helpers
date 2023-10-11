@@ -64,7 +64,7 @@ def get_lcm_channel_data(lcm_log: lcm.EventLog, channel: str, lcm_type_for_decod
             data[key] = np.array(value)
     return data
 
-def get_lcm_data(lcm_log: lcm.EventLog, lcm_type_dictionary=None, trim_front: int = 0, use_nparray: bool = False):
+def get_lcm_data(lcm_log: lcm.EventLog, lcm_type_dictionary=None, channels=None, trim_front: int = 0, use_nparray: bool = False):
     """Gather data from all channels and return as dictionary"""
     if lcm_type_dictionary is None:
         lcm_type_dictionary = scan.make_lcmtype_dictionary() #Make the dictionary using the sys path
@@ -79,6 +79,8 @@ def get_lcm_data(lcm_log: lcm.EventLog, lcm_type_dictionary=None, trim_front: in
         if event.channel == "LCM_TUNNEL_INTROSPECT":
             continue
         if count < trim_front:
+            continue
+        if channels is not None and event.channel not in channels:
             continue
         fingerprint = event.data[:8]
         lcm_type_for_decode = lcm_type_dictionary.get(fingerprint)
@@ -154,6 +156,9 @@ if __name__== "__main__":
                           " unless csv flag(-c) or pickle flag(-p) is present.")
     parser.add_argument('-q','--quiet', action='store_true',
                         help="Reduces the print messages")
+    parser.add_argument('-k', '--channels', type=str, nargs="+", default=None,
+                        help="Choose which channels to include in the data." + \
+                          "By default includes all the channels.")
 
     args = parser.parse_args()
     filenames = args.log
@@ -192,7 +197,7 @@ if __name__== "__main__":
 
     for filename in filenames: # Per log given by user
         log = lcm.EventLog(filename, "r")
-        data = get_lcm_data(log,use_nparray=True)
+        data = get_lcm_data(log, use_nparray=True, channels=args.channels)
 
         if(args.pickle):
             with open(filename + '.pickle', 'wb') as handle:
