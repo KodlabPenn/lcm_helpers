@@ -53,7 +53,8 @@ def find_lcmtypes_in_directory(dir_name, debug=False, cache=False):
             # word "_get_packed_fingerprint"
             full_fname = os.path.join(root, fname)
             try: 
-                contents = open(full_fname, "r").read()
+                with open(full_fname, "r") as f:
+                  contents = f.read()
             except IOError:
                 continue
             except Exception as e:
